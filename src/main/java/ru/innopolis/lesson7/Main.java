@@ -9,23 +9,42 @@ import java.io.PrintStream;
  * 1. args[0] - Имя файла с которого считывается игровое поле
  * 2. args[1] - Имя файла в который производится запись конечного результата
  * 3. args[2] - количество шагов которое должна выполнить программа
+ * 4. args[3] - если аргумент равен "0", то программа выполняется в однопоточном режиме,
+ *              если аргумент равен "1", то программа выполняется в многопоточном режиме
  */
 
 public class Main {
     public static void main(String[] args) {
         int countOfSteps = Integer.parseInt(args[2]);
-        CellLifeCycle cellLifeCycle = new CellLifeCycle(args[0],countOfSteps);
-
-        char[][] cells = cellLifeCycle.followingSteps();
-        try (PrintStream fileWriter = new PrintStream(new File(args[1]))) {
-            for (int i = 0; i < cellLifeCycle.getWidth(); i++) {
-                for (int j = 0; j < cellLifeCycle.getHeight(); j++) {
-                    fileWriter.print(cells[i][j]);
+        int switchStream  = Integer.parseInt(args[3]);
+        if (switchStream == 0) {
+            CellLifeCycle cellLifeCycle = new CellLifeCycle(args[0], countOfSteps);
+            char[][] cells = cellLifeCycle.followingSteps();
+            try (PrintStream fileWriter = new PrintStream(new File(args[1]))) {
+                for (int i = 0; i < cellLifeCycle.getWidth(); i++) {
+                    for (int j = 0; j < cellLifeCycle.getHeight(); j++) {
+                        fileWriter.print(cells[i][j]);
+                    }
+                    fileWriter.print("\n");
                 }
-                fileWriter.print("\n");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+
+        if (switchStream == 1) {
+            MultithreadCelLifeCycle multithreadCelLifeCycle = new MultithreadCelLifeCycle(args[0], countOfSteps);
+            char[][] cells = multithreadCelLifeCycle.followingSteps();
+            try (PrintStream fileWriter = new PrintStream(new File(args[1]))) {
+                for (int i = 0; i < multithreadCelLifeCycle.getWidth(); i++) {
+                    for (int j = 0; j < multithreadCelLifeCycle.getHeight(); j++) {
+                        fileWriter.print(cells[i][j]);
+                    }
+                    fileWriter.print("\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

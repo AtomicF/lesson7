@@ -1,29 +1,48 @@
 package ru.innopolis.lesson7;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class MultithreadCelLifeCycle extends CellLifeCycle {
 
     ExecutorService executor;
 
+    private final String fileName;
+    private final int countOfSteps;
+
+
     public MultithreadCelLifeCycle(String fileName, int countOfSteps) {
         super(fileName, countOfSteps);
-        executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        this.fileName = fileName;
+        this.countOfSteps = countOfSteps;
     }
 
     @Override
     protected char[][] changeStateCells(char[][] cellOld) {
+        executor = Executors.newCachedThreadPool()/*newFixedThreadPool(Runtime.getRuntime().availableProcessors())*/;
+        char[][] newArray = new char[getWidth()][getHeight()];
+        List<Future<char[]>> threadArray = new ArrayList<>();
         for (int i = 0; i < getWidth(); i++) {
             ColumnStateChanger columnStateChanger = new ColumnStateChanger(cellOld, i);
-            FutureTask<char[]> task = new FutureTask<>(columnStateChanger);
+            Future<char[]> task = executor.submit(columnStateChanger);;
+            threadArray.add(task);
+        }
+
+        for (int i = 0; i < getWidth(); i++) {
             try {
-                task.get();
+                newArray[i] = threadArray.get(i).get();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
-        return super.changeStateCells(cellOld);
+
+
+        executor.shutdown();
+        return newArray;
     }
+
+
 
     class ColumnStateChanger implements Callable<char[]> {
         private final char[][] cellOld;
@@ -35,7 +54,7 @@ public class MultithreadCelLifeCycle extends CellLifeCycle {
         }
 
         @Override
-        public char[] call() throws Exception {
+        public char[] call() {
             char[] cell = new char[getHeight()];
             for (int j = 0; j < getHeight(); j++) {
                 cell[j] = cellOld[lineNumber][j];
