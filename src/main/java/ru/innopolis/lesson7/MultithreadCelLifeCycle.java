@@ -20,7 +20,7 @@ public class MultithreadCelLifeCycle extends CellLifeCycle {
 
     @Override
     protected char[][] changeStateCells(char[][] cellOld) {
-        executor = Executors.newCachedThreadPool()/*newFixedThreadPool(Runtime.getRuntime().availableProcessors())*/;
+        executor = Executors.newCachedThreadPool();
         char[][] newArray = new char[getWidth()][getHeight()];
         List<Future<char[]>> threadArray = new ArrayList<>();
         for (int i = 0; i < getWidth(); i++) {

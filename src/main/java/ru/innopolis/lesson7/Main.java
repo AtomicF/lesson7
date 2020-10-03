@@ -17,6 +17,10 @@ public class Main {
     public static void main(String[] args) {
         int countOfSteps = Integer.parseInt(args[2]);
         int switchStream  = Integer.parseInt(args[3]);
+
+        /**
+         * Блок выполнения программы в однопоточном режиме
+         */
         if (switchStream == 0) {
             CellLifeCycle cellLifeCycle = new CellLifeCycle(args[0], countOfSteps);
             char[][] cells = cellLifeCycle.followingSteps();
@@ -32,6 +36,9 @@ public class Main {
             }
         }
 
+        /**
+         * Блок выполнения программы в многопоточном режиме
+         */
         if (switchStream == 1) {
             MultithreadCelLifeCycle multithreadCelLifeCycle = new MultithreadCelLifeCycle(args[0], countOfSteps);
             char[][] cells = multithreadCelLifeCycle.followingSteps();
