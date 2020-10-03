@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * Класс выполняет изменение состояния клеток в многопоточном режиме
+ */
 public class MultithreadCelLifeCycle extends CellLifeCycle {
 
     ExecutorService executor;
@@ -18,6 +21,12 @@ public class MultithreadCelLifeCycle extends CellLifeCycle {
         this.countOfSteps = countOfSteps;
     }
 
+    /**
+     * Метод создает новые потоки. После выполнения всех действий потоками все изменения
+     * записываются в новый массив
+     * @param cellOld - массив до внесения изменений
+     * @return возвращает двумерный массив с внесенными изменениями в состояние клеток
+     */
     @Override
     protected char[][] changeStateCells(char[][] cellOld) {
         executor = Executors.newCachedThreadPool();
@@ -36,14 +45,13 @@ public class MultithreadCelLifeCycle extends CellLifeCycle {
                 e.printStackTrace();
             }
         }
-
-
         executor.shutdown();
         return newArray;
     }
 
-
-
+    /**
+     * Класс задает порядок действий для потока
+     */
     class ColumnStateChanger implements Callable<char[]> {
         private final char[][] cellOld;
         private final int lineNumber;

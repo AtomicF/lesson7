@@ -1,5 +1,8 @@
 package ru.innopolis.lesson7;
 
+/**
+ * Класс выполняет изменения в клетках указанное количество шагов в однопоточном режиме
+ */
 public class CellLifeCycle {
     private int width;
     private int height;
